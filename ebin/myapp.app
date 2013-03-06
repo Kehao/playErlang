@@ -5,4 +5,5 @@
               {applications,[kernel,stdlib]},
               {mod,{myapp_app,[]}},
               {env,[]},
-              {modules,[my_bank,myapp_app,myapp_sup,test]}]}.
+              {modules,[looper,my_bank,myapp_app,myapp_sup,p2,test,u,
+                        user_default]}]}.

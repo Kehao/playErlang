@@ -24,7 +24,9 @@ deposit(Who, Amount)  -> gen_server:call(?MODULE, {add, Who, Amount}).
 withdraw(Who, Amount) -> gen_server:call(?MODULE, {remove, Who, Amount}).  
   
   
-init([]) -> {ok, ets:new(?MODULE,[])}.  
+init([]) -> 
+    process_flag(trap_exit, true),
+  {ok, ets:new(?MODULE,[])}.  
   
 handle_call({new,Who}, _From, Tab) ->  
     Reply = case ets:lookup(Tab, Who) of  
@@ -65,5 +67,8 @@ handle_info(Info, State) ->
   {noreply, State}.  
   
 handle_cast(_Msg, State) -> {noreply, State}.  
-terminate(_Reason, _State) -> ok.  
+terminate(Reason, _State) -> 
+  io:format("================="), 
+  io:format(Reason), 
+  ok.  
 code_change(_OldVsn, State, _Extra) -> {ok, State}.  
