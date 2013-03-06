@@ -24,6 +24,17 @@ r(App) ->
   lm(),    
   application:start(App).
 
+%% @spec ensure_started(App::atom()) -> ok
+%% @doc Start the given App if it has not been started already.
+ensure_started(App) ->
+    case application:start(App) of
+        ok ->
+            ok;
+        {error, {already_started, App}} ->
+            ok
+    end.
+
+
 zz(File) ->    
   ?MODULE:z(File),    
   File:start().
