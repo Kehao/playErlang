@@ -13,4 +13,4 @@ generate:
 	./rebar generate -f
 
 relclean:
-	rm -rf rel/
+	rm -rf rel/myapp

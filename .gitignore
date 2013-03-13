@@ -1,0 +1,4 @@
+*.log
+rel/
+ebin/
+lib/

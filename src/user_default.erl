@@ -27,12 +27,12 @@ r(App) ->
 %% @spec ensure_started(App::atom()) -> ok
 %% @doc Start the given App if it has not been started already.
 ensure_started(App) ->
-    case application:start(App) of
-        ok ->
-            ok;
-        {error, {already_started, App}} ->
-            ok
-    end.
+  case application:start(App) of
+    ok ->
+      ok;
+    {error, {already_started, App}} ->
+      ok
+  end.
 
 
 zz(File) ->    
@@ -101,27 +101,27 @@ find_module_file(Path) ->
 
 %% Reload code
 reload() ->
-    LibExclude = base_lib_path(),
-    Modules = [M || {M, P} <- code:all_loaded(), is_list(P) andalso string:str(P, LibExclude) =:= 0],
-    [shell_default:l(M) || M <- Modules].
+  LibExclude = base_lib_path(),
+  Modules = [M || {M, P} <- code:all_loaded(), is_list(P) andalso string:str(P, LibExclude) =:= 0],
+  [shell_default:l(M) || M <- Modules].
 
 %% Reload code then exec F
 reload_then(F) ->
-    reload(),
-    F().
+  reload(),
+  F().
 
 %% Compiles all files in Emakefile and load into current shell.
 sync() ->
-    make:all([load]).
+  make:all([load]).
 
 %% Run the make command in shell.
 make() ->
-    run_command(["make", "all"]).
+  run_command(["make", "all"]).
 
 %% Run git command in shell.
 git(Command) ->
-    CommandList = ["git", Command],
-    run_command(CommandList).
+  CommandList = ["git", Command],
+  run_command(CommandList).
 
 dbg()                           -> dbg:tracer().
 
@@ -149,31 +149,31 @@ dbg(M, F, A, lr)                -> dbgl({M,   F,   A}, dbg_rt());
 dbg(M, F, A, O)                 -> dbge({M,   F,   A}, O).
 
 tc_avg(M, F, A, N) when N > 1 ->
-    L = tl(lists:reverse(tc_loop(M, F, A, N, []))),
-    Length = length(L),
-    Min = lists:min(L),
-    Max = lists:max(L),
-    Med = lists:nth(round((Length / 2)), lists:sort(L)),
-    Avg = round(lists:foldl(fun(X, Sum) -> X + Sum end, 0, L) / Length),
-    io:format("Range: ~b - ~b mics~n"
-              "Median: ~b mics~n"
-              "Average: ~b mics~n",
-              [Min, Max, Med, Avg]),
-    Med.
+  L = tl(lists:reverse(tc_loop(M, F, A, N, []))),
+  Length = length(L),
+  Min = lists:min(L),
+  Max = lists:max(L),
+  Med = lists:nth(round((Length / 2)), lists:sort(L)),
+  Avg = round(lists:foldl(fun(X, Sum) -> X + Sum end, 0, L) / Length),
+  io:format("Range: ~b - ~b mics~n"
+    "Median: ~b mics~n"
+    "Average: ~b mics~n",
+    [Min, Max, Med, Avg]),
+  Med.
 
 tc_loop(_M, _F, _A, 0, List) ->
-    List;
+  List;
 tc_loop(M, F, A, N, List) ->
-    case timer:tc(M, F, A) of
-        {_T, {'EXIT', Reason}} -> exit(Reason);
-        {T, _Result} -> tc_loop(M, F, A, N - 1, [T|List])
-    end.
+  case timer:tc(M, F, A) of
+    {_T, {'EXIT', Reason}} -> exit(Reason);
+    {T, _Result} -> tc_loop(M, F, A, N - 1, [T|List])
+  end.
 
 %%%% Private Functions
 
 run_command(CommandList) ->
-    Result = os:cmd(string:join(CommandList, " ")),
-    io:format("~s~n", [Result]).
+  Result = os:cmd(string:join(CommandList, " ")),
+  io:format("~s~n", [Result]).
 
 dbgc(MFA)    -> dbg:ctp(MFA).
 dbge(MFA, O) -> dbg:tracer(), dbg:p(all, call), dbg:tp(MFA, O).
@@ -181,56 +181,56 @@ dbgl(MFA, O) -> dbg:tracer(), dbg:p(all, call), dbg:tpl(MFA, O).
 dbg_rt() -> x.
 
 base_lib_path() ->
-    KernAppPath = code:where_is_file("kernel.app"),
-    string:substr(KernAppPath, 1, string:str(KernAppPath,"kernel") - 1).
+  KernAppPath = code:where_is_file("kernel.app"),
+  string:substr(KernAppPath, 1, string:str(KernAppPath,"kernel") - 1).
 
 
 words(Words) ->
-    lists:flatten([0|| _X <- lists:seq(1, Words div 2)]).
+  lists:flatten([0|| _X <- lists:seq(1, Words div 2)]).
 
 substrings(S) -> 
-    Slen = length(S),
-    [string:sub_string(S,B,E) || 
-        B <- lists:seq(1, Slen), E <- lists:seq(B, Slen)].
+  Slen = length(S),
+  [string:sub_string(S,B,E) || 
+    B <- lists:seq(1, Slen), E <- lists:seq(B, Slen)].
 
 get_file_lines(F) ->
-    get_file_lines_acc(F, []).
+  get_file_lines_acc(F, []).
 get_file_lines_acc(F, Acc) ->
-    case file:read_line(F) of
-        eof ->
-            Acc;
-        {ok, Data} ->
-            get_file_lines_acc(F, [Data | Acc])
-    end.
+  case file:read_line(F) of
+    eof ->
+      Acc;
+    {ok, Data} ->
+      get_file_lines_acc(F, [Data | Acc])
+  end.
 
 p(S, S2) ->
-    io:format("~n~p:~n~p~n", [S, S2]).
+  io:format("~n~p:~n~p~n", [S, S2]).
 
 int_to_month(Int) ->
-    lists:nth(Int, [jan, feb, mar, apr, may, jun, jul, aug,
-                    sep, oct, nov, dec]).
+  lists:nth(Int, [jan, feb, mar, apr, may, jun, jul, aug,
+      sep, oct, nov, dec]).
 
 fat_processes() ->
-    fat_processes(10).
+  fat_processes(10).
 fat_processes(C) ->
-    L = lists:sort([{proplists:get_value(heap_size,L),
-                     P,
-                     proplists:get_value(initial_call, L),
-                     proplists:get_value(current_function, L)}
-                    ||{L,P} <- [{process_info(P), P} || P <- processes()]]),
-    lists:reverse(lists:nthtail(length(L) - C, L)).
+  L = lists:sort([{proplists:get_value(heap_size,L),
+        P,
+        proplists:get_value(initial_call, L),
+        proplists:get_value(current_function, L)}
+      ||{L,P} <- [{process_info(P), P} || P <- processes()]]),
+  lists:reverse(lists:nthtail(length(L) - C, L)).
 
 t(Mod, Fun, Args) ->
-    dbg:stop_clear(),
-    dbg:start(),
-    dbg:tracer(),
-    dbg:p(all,c),
-    dbg:tpl(Mod, Fun, Args).
+  dbg:stop_clear(),
+  dbg:start(),
+  dbg:tracer(),
+  dbg:p(all,c),
+  dbg:tpl(Mod, Fun, Args).
 
 intervals(Start, Stop, _) when Start > Stop ->
-    [];
+  [];
 intervals(Start, Stop, N) when Start == Stop; (Start + N) > Stop ->
-    [{Start, Stop}];
+[{Start, Stop}];
 intervals(Start, Stop, N) ->
-    [{Start, Start + N} | intervals(Start + N + 1, Stop, N)].
+  [{Start, Start + N} | intervals(Start + N + 1, Stop, N)].
 
